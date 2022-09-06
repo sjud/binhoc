@@ -2,7 +2,7 @@ use axum_core::extract::FromRequest;
 use bincode::{Decode, Encode};
 use hyper::body::HttpBody;
 use hyper::{Request, StatusCode};
-
+pub use binhoc_macros::binhoc;
 #[derive(Encode,Decode)]
 pub struct BinHoc1<A:Encode+Decode>(pub A);
 
