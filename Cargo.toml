@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "binhoc_core",
+    "binhoc_macros",
+]
+resolver = "2"
