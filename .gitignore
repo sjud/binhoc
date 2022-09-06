@@ -2,3 +2,4 @@
 /Cargo.lock
 .idea/
 examples/*/target
+examples/*/Cargo.lock
