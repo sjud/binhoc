@@ -222,7 +222,6 @@ async fn adhoc_with_struct(
 
 #[tokio::test]
 async fn test_adhoc_with_struct() {
-    use crate::AdhocTestState;
     let router = Router::new()
         .route("/", get(adhoc_with_struct));
 
