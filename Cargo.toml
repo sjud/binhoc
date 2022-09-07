@@ -3,5 +3,5 @@ members = [
     "binhoc_core",
     "binhoc_macros",
 ]
-exclude = ["examples/yew-ssr"]
+exclude = ["examples"]
 resolver = "2"

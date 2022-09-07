@@ -3,3 +3,4 @@
 target = "index.html"
 # The output dir for all final assets.
 dist = "static"
+public_url = "/static/"
