@@ -1,12 +1,16 @@
-use axum_core::extract::FromRequest;
 use bincode::{Decode, Encode};
+#[cfg(not(target_arch = "wasm32"))]
 use hyper::body::HttpBody;
+#[cfg(not(target_arch = "wasm32"))]
 use hyper::{Request, StatusCode};
+#[cfg(not(target_arch = "wasm32"))]
+use axum_core::extract::FromRequest;
+
 pub use binhoc_macros::binhoc;
 #[derive(Encode,Decode)]
 pub struct BinHoc1<A:Encode+Decode>(pub A);
 
-
+#[cfg(not(target_arch = "wasm32"))]
 #[async_trait::async_trait]
 impl<State,A,Body> FromRequest<State,Body> for BinHoc1<A>
     where
@@ -35,6 +39,7 @@ pub struct BinHoc2<
     B:Encode+Decode>
 (pub A,pub B,);
 
+#[cfg(not(target_arch = "wasm32"))]
 #[async_trait::async_trait]
 impl<State,A,B,Body> FromRequest<State,Body> for BinHoc2<A,B>
     where
@@ -59,13 +64,14 @@ impl<State,A,B,Body> FromRequest<State,Body> for BinHoc2<A,B>
 }
 
 
-        #[derive(Encode,Decode)]
+#[derive(Encode,Decode)]
 pub struct BinHoc3<
     A:Encode+Decode,
     B:Encode+Decode,
     C:Encode+Decode>
 (pub A,pub B,pub C,);
 
+#[cfg(not(target_arch = "wasm32"))]
 #[async_trait::async_trait]
 impl<State,A,B,C,Body> FromRequest<State,Body> for BinHoc3<A,B,C>
     where
@@ -97,6 +103,7 @@ pub struct BinHoc4<
     D2:Encode+Decode, // D is already used by Decode derive??
 >(pub A,pub B,pub C, pub D2);
 
+#[cfg(not(target_arch = "wasm32"))]
 #[async_trait::async_trait]
 impl<State,A,B,C,D2,Body> FromRequest<State,Body> for BinHoc4<A,B,C,D2>
     where
@@ -130,6 +137,7 @@ pub struct BinHoc5<
     E2:Encode+Decode, // E is already used by Encode derive??
 >(pub A,pub B,pub C, pub D2, pub E2,);
 
+#[cfg(not(target_arch = "wasm32"))]
 #[async_trait::async_trait]
 impl<State,A,B,C,D2,E2,Body> FromRequest<State,Body> for BinHoc5<A,B,C,D2,E2>
     where
@@ -165,6 +173,7 @@ pub struct BinHoc6<
     F:Encode+Decode
 >(pub A,pub B,pub C, pub D2, pub E2, pub F,);
 
+#[cfg(not(target_arch = "wasm32"))]
 #[async_trait::async_trait]
 impl<State,A,B,C,D2,E2,F,Body> FromRequest<State,Body> for BinHoc6<A,B,C,D2,E2,F>
     where

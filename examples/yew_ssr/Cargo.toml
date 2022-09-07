@@ -1,0 +1,32 @@
+[package]
+name = "yew-ssr"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+yew = { git = "https://github.com/yewstack/yew" , branch = "master", features = ["ssr","hydration","tokio"] }
+axum = "0.6.0-rc.1"
+reqwest = "0.11.11"
+anyhow = "1.0.64"
+bincode = "2.0.0-rc.1"
+binhoc_core = {path ="../../binhoc_core"}
+tokio = {version="1.21.0",features=["full"]}
+futures = "0.3.24"
+axum-macros = "0.3.0-rc.1"
+web-sys = {version="0.3.59",features=["HtmlInputElement"]}
+tower-http = {version="0.3.4",features=["fs","trace"]}
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing = "0.1"
+axum-extra = {version="0.4.0-rc.1",features=["spa"]}
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+yew = { git = "https://github.com/yewstack/yew" , branch = "master", features = ["ssr","hydration","tokio"] }
+reqwest = "0.11.11"
+bincode = "2.0.0-rc.1"
+web-sys = {version="0.3.59",features=["HtmlInputElement"]}
+binhoc_core = {path ="../../binhoc_core"}
+anyhow = "1.0.64"
+wasm-logger = "0.2.0"
+log = "0.4.17"

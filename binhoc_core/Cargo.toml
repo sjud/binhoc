@@ -9,9 +9,13 @@ license = "MIT OR Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
-async-trait = "0.1.57"
-axum-core = "0.3.0-rc.1"
+[target.'cfg(target_arch = "wasm32")'.dependencies]
 bincode = "2.0.0-rc.1"
+binhoc_macros = {path="../binhoc_macros"}
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+axum-core = "0.3.0-rc.1"
 hyper = "0.14.20"
-binhoc_macros = "0.1.0"
+async-trait = "0.1.57"
+bincode = "2.0.0-rc.1"
+binhoc_macros = {path="../binhoc_macros"}

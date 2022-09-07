@@ -9,15 +9,7 @@ use syn::token::Comma;
 
 pub fn impl_adhoc_reqwest_fn(attr:&AttributeArgs,item:&ItemFn) -> TokenStream {
     let name = &item.sig.ident;
-    let method = match attr[0].clone() {
-        NestedMeta::Meta(_) => panic!("Only str args are supported: i.e \"get\" instead of get, \
-          you get it?"),
-        NestedMeta::Lit(lit) => match lit {
-            Lit::Str(lit) => lit,
-            _ => panic!("unsuported func args"),
-        }
-    };
-    let relative_route = match attr[1].clone() {
+    let relative_route = match attr[0].clone() {
         NestedMeta::Meta(_) => panic!("Only str args are supported: i.e \"get\" instead of get, \
           you get it?"),
         NestedMeta::Lit(lit) => match lit {
@@ -29,27 +21,8 @@ pub fn impl_adhoc_reqwest_fn(attr:&AttributeArgs,item:&ItemFn) -> TokenStream {
         panic!("All routes must start with /, your base URL must not end with /")
     }
 
-    let method = match method.value().as_str() {
-        "get" => {
-            quote!(.get(format!("{}{}",base,#relative_route)))
-        },
-        "post" => {
-            quote!(.post(format!("{}{}",base,#relative_route)))
-        },
-        "put" => {
-            quote!(.put(format!("{}{}",base,#relative_route)))
-        },
-        "delete" => {
-            quote!(.delete(format!("{}{}",base,#relative_route)))
-        },
-        "patch" => {
-            quote!(.patch(format!("{}{}",base,#relative_route)))
-        },
-        "head" => {
-            quote!(.head(format!("{}{}",base,#relative_route)))
-        },
-        _ => panic!("unsupported method in first arg")
-    };
+    let method = quote!(.post(format!("{}{}",base,#relative_route)));
+
 
     let mut func_generics = Vec::new();
     func_generics.push(quote!(U:std::fmt::Display));
@@ -180,7 +153,7 @@ pub fn impl_adhoc_reqwest_fn(attr:&AttributeArgs,item:&ItemFn) -> TokenStream {
         list.push(quote!(#last));
         list
     };
-    let mod_name = format_ident!("gen_adhoc_{}",name);
+    let mod_name = format_ident!("gen_binhoc_{}",name);
     // arg_types = T
     // arg_vars = var
     // args_formatted = var : T
