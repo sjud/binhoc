@@ -12,7 +12,6 @@ reqwest = "0.11.11"
 anyhow = "1.0.64"
 bincode = "2.0.0-rc.1"
 binhoc = {path ="../../binhoc"}
-binhoc_core = {path ="../../binhoc_core"}
 tokio = {version="1.21.0",features=["full"]}
 futures = "0.3.24"
 axum-macros = "0.3.0-rc.1"
@@ -29,7 +28,6 @@ reqwest = "0.11.11"
 bincode = "2.0.0-rc.1"
 web-sys = {version="0.3.59",features=["HtmlInputElement"]}
 binhoc = {path ="../../binhoc"}
-binhoc_core = {path ="../../binhoc_core"}
 anyhow = "1.0.64"
 wasm-logger = "0.2.0"
 log = "0.4.17"

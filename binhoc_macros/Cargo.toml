@@ -16,7 +16,7 @@ syn = {version="1.0.99", features=["full"]}
 quote = "1.0"
 
 [dev-dependencies]
-binhoc_core = {path="../binhoc_core"}
+binhoc = {path="../binhoc"}
 anyhow = "1.0.64"
 reqwest = "0.11.11"
 async-trait = "0.1.57"

@@ -7,7 +7,7 @@ use bincode::{Decode, Encode};
 use http::{Request, StatusCode};
 use reqwest::Client;
 use binhoc_macros::binhoc;
-use binhoc_core::{BinHoc1, BinHoc3};
+use binhoc::{BinHoc1, BinHoc3};
 use axum::routing::post;
 
 #[binhoc("/adhoc")]
