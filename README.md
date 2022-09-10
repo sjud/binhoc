@@ -1,6 +1,7 @@
 <h1>BinHoc</h1>
-<h3>RPC Codegen for Rapid Prototyping of FullStack Rust wasm apps</h3>
-![binhawk](https://github.com/sjud/axum_binhoc/blob/main/binhawk/jpeg)
+<h3>RPC Codegen for Rapid Prototyping of FullStack Rust WASM apps</h3>
+
+Currently only supports Axum as a backend but could support other web frameworks very easily.
 
 Annotate handlers that are in a shared library with the binhoc attribute which takes
 on argument that will resolve to the route the handler will be attached to on the server.
