@@ -1,6 +1,8 @@
 /target
 /Cargo.lock
 .idea/
+target
+examples/target
 examples/*/target
 examples/*/Cargo.lock
 examples/*/*/target
