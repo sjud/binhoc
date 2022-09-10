@@ -168,13 +168,12 @@ dependencies = [
 
 [[package]]
 name = "binhoc"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "async-trait",
  "axum-core",
  "bincode 2.0.0-rc.1",
- "binhoc_macros 0.1.1",
- "binhoc_macros 0.2.0",
+ "binhoc_macros",
  "hyper",
  "tower-layer",
  "tower-service",
@@ -182,19 +181,9 @@ dependencies = [
 
 [[package]]
 name = "binhoc_macros"
-version = "0.1.1"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3f2084dfb15009ec890d03f1a322c1fd79b260970c0c2786426200fd09a08292"
-dependencies = [
- "quote",
- "syn",
-]
-
-[[package]]
-name = "binhoc_macros"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b8e1e89e94306d55fe0895c33572da2aac64bb7c50ce3393e90ac64fd3a6c95"
+checksum = "02f67f98db3ceb85e65d50586b9b75c19e07d64bf01eed269ad2748995ab26a3"
 dependencies = [
  "quote",
  "syn",
