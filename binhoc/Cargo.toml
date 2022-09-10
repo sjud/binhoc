@@ -11,13 +11,13 @@ license = "MIT OR Apache-2.0"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 bincode = "2.0.0-rc.1"
-binhoc_macros =  "0.2.1"
+binhoc_macros =  "0.2.11"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 axum-core = "0.3.0-rc.1"
 hyper = "0.14.20"
 async-trait = "0.1.57"
 bincode = "2.0.0-rc.1"
-binhoc_macros =  "0.2.1"
+binhoc_macros =  "0.2.11"
 tower-layer = "0.3.1"
 tower-service = "0.3.2"

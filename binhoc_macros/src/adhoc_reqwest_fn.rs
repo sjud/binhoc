@@ -167,6 +167,7 @@ pub fn impl_adhoc_reqwest_fn(attr:&AttributeArgs,item:&ItemFn) -> TokenStream {
             use super::*;
             use bincode::{Decode,Encode};
             use headers::HeaderMapExt;
+            use reqwest::header::HeaderMap;
             #[derive(Encode,Decode)]
             struct BinHoc(#(#arg_types),*);
             pub async fn #name<#(#func_generics)*>(
