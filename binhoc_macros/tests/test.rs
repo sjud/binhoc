@@ -11,7 +11,6 @@ use binhoc::{BinHoc1, BinHoc3};
 use axum::routing::post;
 use http::header::HeaderName;
 use crate::headers::{Error, Header};
-
 #[binhoc("/adhoc")]
 pub async fn adhoc(
     BinHoc3(email, password, code): BinHoc3<String,String,i32>
@@ -325,6 +324,7 @@ impl Header for XHead{
 #[binhoc("/")]
 pub async fn adhoc_with_header(
     TypedHeader(x_head):TypedHeader<XHead>,
+    State(_):State<bool>,
 ) -> StatusCode {
     assert_eq!(x_head.0,String::from("x-heady"));
     StatusCode::OK
@@ -333,7 +333,7 @@ pub async fn adhoc_with_header(
 
 #[tokio::test]
 async fn test_adhoc_with_headerse() {
-    let router = Router::new()
+    let router = Router::with_state(true)
         .route("/", post(adhoc_with_header));
 
     let listener = TcpListener::bind("0.0.0.0:0"
@@ -360,4 +360,84 @@ async fn test_adhoc_with_headerse() {
         StatusCode::OK
     );
 }
+use bincode::serde::Compat;
+use uuid::Uuid;
+#[binhoc("/")]
+pub async fn adhoc_with_uuid(
+    BinHoc1(uuid):BinHoc1<Compat<Uuid>>,
+) -> StatusCode {
+    StatusCode::OK
+}
+
+
+#[tokio::test]
+async fn test_adhoc_with_uuid() {
+    let router = Router::with_state(true)
+        .route("/", post(adhoc_with_uuid));
+
+    let listener = TcpListener::bind("0.0.0.0:0"
+        .parse::<SocketAddr>()
+        .unwrap()
+    ).unwrap();
+
+    let addr = listener.local_addr().unwrap().to_string();
+
+    tokio::spawn(async move {
+        axum::Server::from_tcp(listener)
+            .unwrap()
+            .serve(router.into_make_service())
+            .await
+            .unwrap();
+    });
+    let client = Client::new();
+    let base = format!("http://{}",addr);
+    assert_eq!(
+        binhoc_client_adhoc_with_uuid
+        ::adhoc_with_uuid
+            (&client,base,Compat(Uuid::new_v4()))
+            .await.unwrap().status(),
+        StatusCode::OK
+    );
+}
+
+//    State(state):State<bool>,
+#[binhoc("/")]
+pub async fn adhoc_with_three(
+    TypedHeader(header):TypedHeader<XHead>,
+    BinHoc1(uuid):BinHoc1<Compat<Uuid>>,
+) -> StatusCode {
+    StatusCode::OK
+}
+
+
+#[tokio::test]
+async fn test_adhoc_with_three() {
+    let router = Router::with_state(true)
+        .route("/", post(adhoc_with_three));
+
+    let listener = TcpListener::bind("0.0.0.0:0"
+        .parse::<SocketAddr>()
+        .unwrap()
+    ).unwrap();
+
+    let addr = listener.local_addr().unwrap().to_string();
+
+    tokio::spawn(async move {
+        axum::Server::from_tcp(listener)
+            .unwrap()
+            .serve(router.into_make_service())
+            .await
+            .unwrap();
+    });
+    let client = Client::new();
+    let base = format!("http://{}",addr);
+    assert_eq!(
+        binhoc_client_adhoc_with_three
+        ::adhoc_with_three
+            (&client,base,XHead(String::from("x-heady")),Compat(Uuid::new_v4()))
+            .await.unwrap().status(),
+        StatusCode::OK
+    );
+}
+
 

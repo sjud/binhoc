@@ -88,11 +88,10 @@ pub fn impl_adhoc_reqwest_fn(attr:&AttributeArgs,item:&ItemFn) -> TokenStream {
                                                 .collect::<Vec<GenericArgument>>();
                                             // For each arg in gen args push arg onto arg_types.
                                             for arg in gen_args {
-                                                let arg = arg.to_token_stream();
                                                 arg_types.push(arg);
                                             }
                                         },
-                                        _ => continue,
+                                        _ => {},
                                     }
                                 },
                                 _ => { panic!("Expecting something like path::BinHocN<args...>.") }
@@ -131,9 +130,9 @@ pub fn impl_adhoc_reqwest_fn(attr:&AttributeArgs,item:&ItemFn) -> TokenStream {
                                 _ => { panic!("Expecting something like path::BinHocN<args...>.") }
                             };
                             header_push.push(quote!(headers.typed_insert(#var);));
-                            header_formatted.push(quote!(#var : #type_side))
+                            header_formatted.push(quote!(#var : #type_side,))
                         }
-                        else {continue}
+                        else {}
                     } else {
                         panic!("expecting path types in function signature")
                     }
@@ -143,7 +142,7 @@ pub fn impl_adhoc_reqwest_fn(attr:&AttributeArgs,item:&ItemFn) -> TokenStream {
         }
         for (var,ty) in arg_vars.iter().zip(arg_types.iter()) {
             args_formatted.push(
-                quote!(#var : #ty)
+                quote!(#var : #ty,)
             );
         }
         (arg_vars,arg_types,args_formatted,header_push,header_formatted)
@@ -158,6 +157,9 @@ pub fn impl_adhoc_reqwest_fn(attr:&AttributeArgs,item:&ItemFn) -> TokenStream {
         list.push(quote!(#last));
         list
     };
+
+
+
     let mod_name = format_ident!("binhoc_client_{}",name);
     // arg_types = T
     // arg_vars = var
@@ -173,8 +175,9 @@ pub fn impl_adhoc_reqwest_fn(attr:&AttributeArgs,item:&ItemFn) -> TokenStream {
             pub async fn #name<#(#func_generics)*>(
                 client:&reqwest::Client,
                 base:U,
-                #(#header_formatted),*
-                #(#args_formatted),*)
+                #(#header_formatted)*
+                #(#args_formatted)*
+            )
             -> Result<reqwest::Response,anyhow::Error> {
                 let body = BinHoc(#(#arg_vars),*);
                 let body = bincode::encode_to_vec(
