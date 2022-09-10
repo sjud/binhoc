@@ -47,14 +47,12 @@ pub mod binhoc_client_login_with_code {
     }
 }
 #[cfg(not(target_arch = "wasm32"))]
-pub mod binhoc_server_login_with_code {
-    use super::*;
-    pub async fn login_with_code( 
+pub async fn login_with_code( 
         BinHoc3(email, password, code): BinHoc3<String,String,i32>
     ) -> StatusCode {
         StatusCode::OK
     }
-}
+
 ```
 The client code it generates takes `&reqwest::Client` a base_url and it takes the specific
 types specified for BinHocN, the variable names of those types given in the deconstruction

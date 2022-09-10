@@ -182,10 +182,7 @@ pub fn impl_adhoc_reqwest_fn(attr:&AttributeArgs,item:&ItemFn) -> TokenStream {
             }
         }
         #[cfg(not(target_arch = "wasm32"))]
-        pub mod #handler_mod_name {
-            use super::*;
-            #item
-        }
+        #item
     };
     gen.into()
 }

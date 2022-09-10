@@ -20,7 +20,7 @@ pub async fn adhoc(
 #[tokio::test]
 async fn test_adhoc() {
     let router = Router::new()
-        .route("/adhoc", post(binhoc_server_adhoc::adhoc));
+        .route("/adhoc", post(adhoc));
     let listener = TcpListener::bind("0.0.0.0:0"
         .parse::<SocketAddr>()
         .unwrap()
@@ -57,7 +57,7 @@ pub async fn adhoc_sad_route(
 async fn test_adhoc_sad_route() {
     let router = Router::new()
         .route("/not_sadness",
-               post(binhoc_server_adhoc_sad_route::adhoc_sad_route));
+               post(adhoc_sad_route));
     let listener = TcpListener::bind("0.0.0.0:0"
         .parse::<SocketAddr>()
         .unwrap()
@@ -103,7 +103,7 @@ async fn test_adhoc_body_is_state() {
         String::from("email"),
         String::from("pass"),
         32
-    )).route("/", post(binhoc_server_adhoc_body_is_state::adhoc_body_is_state));
+    )).route("/", post(adhoc_body_is_state));
 
     let listener = TcpListener::bind("0.0.0.0:0"
         .parse::<SocketAddr>()
@@ -142,7 +142,7 @@ pub async fn adhoc_optional_arg(
 async fn test_adhoc_optional_arg() {
     use crate::AdhocTestState;
     let router = Router::new()
-        .route("/", post(binhoc_server_adhoc_optional_arg::adhoc_optional_arg));
+        .route("/", post(adhoc_optional_arg));
 
     let listener = TcpListener::bind("0.0.0.0:0"
         .parse::<SocketAddr>()
@@ -179,7 +179,7 @@ pub async fn adhoc_optional_arg_2(
 async fn test_adhoc_optional_arg_2() {
     use crate::AdhocTestState;
     let router = Router::new()
-        .route("/", post(binhoc_server_adhoc_optional_arg_2::adhoc_optional_arg_2));
+        .route("/", post(adhoc_optional_arg_2));
 
     let listener = TcpListener::bind("0.0.0.0:0"
         .parse::<SocketAddr>()
@@ -223,7 +223,7 @@ pub async fn adhoc_with_struct(
 #[tokio::test]
 async fn test_adhoc_with_struct() {
     let router = Router::new()
-        .route("/", post(binhoc_server_adhoc_with_struct::adhoc_with_struct));
+        .route("/", post(adhoc_with_struct));
 
     let listener = TcpListener::bind("0.0.0.0:0"
         .parse::<SocketAddr>()
