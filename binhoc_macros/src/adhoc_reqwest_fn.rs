@@ -153,7 +153,8 @@ pub fn impl_adhoc_reqwest_fn(attr:&AttributeArgs,item:&ItemFn) -> TokenStream {
         list.push(quote!(#last));
         list
     };
-    let mod_name = format_ident!("gen_binhoc_{}",name);
+    let mod_name = format_ident!("binhoc_client_{}",name);
+    let handler_mod_name = format_ident!("binhoc_server_{}",name);
     // arg_types = T
     // arg_vars = var
     // args_formatted = var : T
@@ -180,7 +181,11 @@ pub fn impl_adhoc_reqwest_fn(attr:&AttributeArgs,item:&ItemFn) -> TokenStream {
                     .await?)
             }
         }
-        #item
+        #[cfg(not(target_arch = "wasm32"))]
+        pub mod #handler_mod_name {
+            use super::*;
+            #item
+        }
     };
     gen.into()
 }

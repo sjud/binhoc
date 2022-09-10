@@ -8,8 +8,9 @@ use axum::Router;
 use axum::routing::{get, get_service,post};
 use futures::{stream, Stream, StreamExt, TryStreamExt};
 use axum::BoxError;
+use axum::handler::{Handler, HandlerWithoutStateExt};
 use axum::http::StatusCode;
-use yew_ssr::{data,App};
+use yew_ssr::{binhoc_server_data::data,App};
 use tower_http::{
     services::ServeDir,
     trace::TraceLayer,
@@ -28,8 +29,7 @@ async fn main() {
         ))
         .with(tracing_subscriber::fmt::layer())
         .init();
-
-    let router = Router::new()
+    let router = Router::with_state(true)
         .merge(axum_extra::routing::SpaRouter::new("/static", "static"))
         .route("/data",post(data))
         .fallback(index)
@@ -47,6 +47,9 @@ async fn main() {
         .unwrap()
 }
 
+async fn process_data(data:String) -> String {
+    format!("Data Processed: {}", data)
+}
 async fn render(
     index_html_before: String,
     index_html_after: String,

@@ -1,17 +1,31 @@
 use std::str::FromStr;
+
 use yew::{Callback, FocusEvent, html, Html, use_node_ref, use_state};
 use yew::platform::spawn_local;
 use yew::suspense::use_future;
 use yew::prelude::*;
 use web_sys::HtmlInputElement;
-use binhoc_core::BinHoc2;
+use binhoc_core::{BinHoc1, BinHoc2};
+
+#[cfg(not(target_arch = "wasm32"))]
+use axum::{
+    extract::State,
+};
+#[cfg(not(target_arch = "wasm32"))]
+use axum_core::response::{
+    IntoResponse,
+    Response
+};
 
 pub static BASE_URL :&'static str = "http://127.0.0.1:3000";
 
 #[binhoc_core::binhoc("/data")]
-pub async fn data(BinHoc2(data_1,data_2):BinHoc2<String,i32>) -> String {
+pub async fn data(
+    State(_):State<bool>,
+    BinHoc2(data_1,data_2):BinHoc2<String,i32>) -> String {
     format!("{} + {}",data_1,data_2)
 }
+
 #[function_component]
 pub fn App() -> Html {
     let data_1 = use_node_ref();
@@ -29,7 +43,7 @@ pub fn App() -> Html {
             let data_1 = data_1_c.cast::<HtmlInputElement>().unwrap().value();
             let data_2 = data_2_c.cast::<HtmlInputElement>().unwrap().value();
             let data_2 = i32::from_str(&data_2).unwrap();
-            let resp : reqwest::Response  = gen_binhoc_data::data(
+            let resp : reqwest::Response  = binhoc_client_data::data(
                 &reqwest::Client::new(),
                 BASE_URL,
                 data_1,
@@ -49,7 +63,7 @@ pub fn App() -> Html {
                 <input type="text" placeholder="Data_2" ref={data_2.clone()}/>
                 <br/>
                 <button type="submit" disabled=false>
-        <h3>{ "Create Account" }</h3> </button>
+        { "Submit Data" } </button>
             </form>
         </div>
     }

@@ -8,9 +8,10 @@ use http::{Request, StatusCode};
 use reqwest::Client;
 use binhoc_macros::binhoc;
 use binhoc_core::{BinHoc1, BinHoc3};
+use axum::routing::post;
 
-#[binhoc("get","/adhoc")]
-async fn adhoc(
+#[binhoc("/adhoc")]
+pub async fn adhoc(
     BinHoc3(email, password, code): BinHoc3<String,String,i32>
 ) -> StatusCode {
     StatusCode::OK
@@ -19,7 +20,7 @@ async fn adhoc(
 #[tokio::test]
 async fn test_adhoc() {
     let router = Router::new()
-        .route("/adhoc", get(adhoc));
+        .route("/adhoc", post(binhoc_server_adhoc::adhoc));
     let listener = TcpListener::bind("0.0.0.0:0"
         .parse::<SocketAddr>()
         .unwrap()
@@ -40,14 +41,13 @@ async fn test_adhoc() {
     let code = 32;
     let base = format!("http://{}",addr);
     assert_eq!(
-        gen_adhoc_adhoc
-        ::adhoc
+        binhoc_client_adhoc::adhoc
             (&client,base,email,pass,code).await.unwrap().status(),
         StatusCode::OK
     );
 }
-#[binhoc("get","/sadness")]
-async fn adhoc_sad_route(
+#[binhoc("/sadness")]
+pub async fn adhoc_sad_route(
     BinHoc3(email, password, code): BinHoc3<String,String,i32>
 ) -> StatusCode {
     StatusCode::OK
@@ -57,7 +57,7 @@ async fn adhoc_sad_route(
 async fn test_adhoc_sad_route() {
     let router = Router::new()
         .route("/not_sadness",
-               get(adhoc_sad_route));
+               post(binhoc_server_adhoc_sad_route::adhoc_sad_route));
     let listener = TcpListener::bind("0.0.0.0:0"
         .parse::<SocketAddr>()
         .unwrap()
@@ -78,7 +78,7 @@ async fn test_adhoc_sad_route() {
     let code = 32;
     let base = format!("http://{}",addr);
     assert_eq!(
-        gen_adhoc_adhoc_sad_route
+        binhoc_client_adhoc_sad_route
         ::adhoc_sad_route
             (&client,base,email,pass,code).await.unwrap().status(),
         StatusCode::NOT_FOUND
@@ -87,8 +87,8 @@ async fn test_adhoc_sad_route() {
 #[derive(Clone,Debug)]
 pub struct AdhocTestState(String,String,i32);
 
-#[binhoc("get","/")]
-async fn adhoc_body_is_state(
+#[binhoc("/")]
+pub async fn adhoc_body_is_state(
     State(state):State<AdhocTestState>,
     BinHoc3(email,password,code):BinHoc3<String,String,i32>
 ) -> StatusCode {
@@ -103,7 +103,7 @@ async fn test_adhoc_body_is_state() {
         String::from("email"),
         String::from("pass"),
         32
-    )).route("/", get(adhoc_body_is_state));
+    )).route("/", post(binhoc_server_adhoc_body_is_state::adhoc_body_is_state));
 
     let listener = TcpListener::bind("0.0.0.0:0"
         .parse::<SocketAddr>()
@@ -125,14 +125,14 @@ async fn test_adhoc_body_is_state() {
     let code = 32;
     let base = format!("http://{}",addr);
     assert_eq!(
-        gen_adhoc_adhoc_body_is_state
+        binhoc_client_adhoc_body_is_state
         ::adhoc_body_is_state
             (&client,base,email,pass,code).await.unwrap().status(),
         StatusCode::OK
     );
 }
-#[binhoc("get","/")]
-async fn adhoc_optional_arg(
+#[binhoc("/")]
+pub async fn adhoc_optional_arg(
     BinHoc1(is_some):BinHoc1<Option<bool>>
 ) -> StatusCode {
     assert!(is_some.is_some());
@@ -142,7 +142,7 @@ async fn adhoc_optional_arg(
 async fn test_adhoc_optional_arg() {
     use crate::AdhocTestState;
     let router = Router::new()
-        .route("/", get(adhoc_optional_arg));
+        .route("/", post(binhoc_server_adhoc_optional_arg::adhoc_optional_arg));
 
     let listener = TcpListener::bind("0.0.0.0:0"
         .parse::<SocketAddr>()
@@ -162,14 +162,14 @@ async fn test_adhoc_optional_arg() {
     let client = Client::new();
     let base = format!("http://{}",addr);
     assert_eq!(
-        gen_adhoc_adhoc_optional_arg
+        binhoc_client_adhoc_optional_arg
         ::adhoc_optional_arg
             (&client,base,Some(true)).await.unwrap().status(),
         StatusCode::OK
     );
 }
-#[binhoc("get","/")]
-async fn adhoc_optional_arg_2(
+#[binhoc("/")]
+pub async fn adhoc_optional_arg_2(
     BinHoc1(is_none):BinHoc1<Option<bool>>
 ) -> StatusCode {
     assert!(is_none.is_none());
@@ -179,7 +179,7 @@ async fn adhoc_optional_arg_2(
 async fn test_adhoc_optional_arg_2() {
     use crate::AdhocTestState;
     let router = Router::new()
-        .route("/", get(adhoc_optional_arg_2));
+        .route("/", post(binhoc_server_adhoc_optional_arg_2::adhoc_optional_arg_2));
 
     let listener = TcpListener::bind("0.0.0.0:0"
         .parse::<SocketAddr>()
@@ -199,7 +199,7 @@ async fn test_adhoc_optional_arg_2() {
     let client = Client::new();
     let base = format!("http://{}",addr);
     assert_eq!(
-        gen_adhoc_adhoc_optional_arg_2
+        binhoc_client_adhoc_optional_arg_2
         ::adhoc_optional_arg_2
             (&client,base,None).await.unwrap().status(),
         StatusCode::OK
@@ -212,8 +212,8 @@ pub struct User{
     id:u32,
 }
 
-#[binhoc("get","/")]
-async fn adhoc_with_struct(
+#[binhoc("/")]
+pub async fn adhoc_with_struct(
     BinHoc1(user):BinHoc1<User>
 ) -> StatusCode {
     assert_eq!(user.email,"hello".to_string());
@@ -223,7 +223,7 @@ async fn adhoc_with_struct(
 #[tokio::test]
 async fn test_adhoc_with_struct() {
     let router = Router::new()
-        .route("/", get(adhoc_with_struct));
+        .route("/", post(binhoc_server_adhoc_with_struct::adhoc_with_struct));
 
     let listener = TcpListener::bind("0.0.0.0:0"
         .parse::<SocketAddr>()
@@ -243,7 +243,7 @@ async fn test_adhoc_with_struct() {
     let client = Client::new();
     let base = format!("http://{}",addr);
     assert_eq!(
-        gen_adhoc_adhoc_with_struct
+        binhoc_client_adhoc_with_struct
         ::adhoc_with_struct
             (&client,base,User{
                 email: "hello".to_string(),
