@@ -1,6 +1,6 @@
 [package]
 name = "binhoc"
-version = "0.1.2"
+version = "0.1.21"
 edition = "2021"
 authors = ["sjud"]
 description = "Generate code for rust clients communicating with axum servers. "
