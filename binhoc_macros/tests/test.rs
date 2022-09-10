@@ -1,14 +1,16 @@
 use std::net::{SocketAddr, TcpListener};
 use axum::body::HttpBody;
 use axum::extract::{FromRequest, State};
-use axum::Router;
+use axum::{headers, Router, TypedHeader};
 use axum::routing::get;
 use bincode::{Decode, Encode};
-use http::{Request, StatusCode};
+use http::{HeaderMap, HeaderValue, Request, StatusCode};
 use reqwest::Client;
 use binhoc_macros::binhoc;
 use binhoc::{BinHoc1, BinHoc3};
 use axum::routing::post;
+use http::header::HeaderName;
+use crate::headers::{Error, Header};
 
 #[binhoc("/adhoc")]
 pub async fn adhoc(
@@ -253,3 +255,109 @@ async fn test_adhoc_with_struct() {
         StatusCode::OK
     );
 }
+
+#[binhoc("/")]
+pub async fn adhoc_vec_tuple(
+    BinHoc1(vec):BinHoc1<Vec<(bool,bool)>>
+) -> StatusCode {
+    for (b,b1) in vec.into_iter() {
+        assert!(b && b1);
+    }
+    StatusCode::OK
+}
+
+
+#[tokio::test]
+async fn test_adhoc_with_vec_tuple() {
+    let router = Router::new()
+        .route("/", post(adhoc_vec_tuple));
+
+    let listener = TcpListener::bind("0.0.0.0:0"
+        .parse::<SocketAddr>()
+        .unwrap()
+    ).unwrap();
+
+    let addr = listener.local_addr().unwrap().to_string();
+
+    tokio::spawn(async move {
+        axum::Server::from_tcp(listener)
+            .unwrap()
+            .serve(router.into_make_service())
+            .await
+            .unwrap();
+    });
+
+    let client = Client::new();
+    let base = format!("http://{}",addr);
+    assert_eq!(
+        binhoc_client_adhoc_vec_tuple
+        ::adhoc_vec_tuple
+            (&client,base,vec![(true,true),(true,true),(true,true)])
+            .await.unwrap().status(),
+        StatusCode::OK
+    );
+}
+
+static XHEAD : HeaderName = HeaderName::from_static("x-head");
+#[derive(Debug)]
+pub struct XHead(String);
+impl Header for XHead{
+    fn name() -> &'static HeaderName {
+        &XHEAD
+    }
+
+    fn decode<'i, I>(values: &mut I) -> Result<Self, Error>
+        where
+            Self: Sized,
+            I: Iterator<Item=&'i HeaderValue> {
+        let value = values
+            .next()
+            .ok_or_else(headers::Error::invalid)?;
+        Ok(Self(value.to_str().unwrap().to_string()))
+    }
+
+    fn encode<E: Extend<HeaderValue>>(&self, values: &mut E) {
+        let value = HeaderValue::from_str(&self.0).unwrap();
+        values.extend(std::iter::once(value));
+    }
+}
+
+#[binhoc("/")]
+pub async fn adhoc_with_header(
+    TypedHeader(x_head):TypedHeader<XHead>,
+) -> StatusCode {
+    assert_eq!(x_head.0,String::from("x-heady"));
+    StatusCode::OK
+}
+
+
+#[tokio::test]
+async fn test_adhoc_with_headerse() {
+    let router = Router::new()
+        .route("/", post(adhoc_with_header));
+
+    let listener = TcpListener::bind("0.0.0.0:0"
+        .parse::<SocketAddr>()
+        .unwrap()
+    ).unwrap();
+
+    let addr = listener.local_addr().unwrap().to_string();
+
+    tokio::spawn(async move {
+        axum::Server::from_tcp(listener)
+            .unwrap()
+            .serve(router.into_make_service())
+            .await
+            .unwrap();
+    });
+    let client = Client::new();
+    let base = format!("http://{}",addr);
+    assert_eq!(
+        binhoc_client_adhoc_with_header
+        ::adhoc_with_header
+            (&client,base,XHead(String::from("x-heady")))
+            .await.unwrap().status(),
+        StatusCode::OK
+    );
+}
+
