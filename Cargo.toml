@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "binhoc",
+    "binhoc_core",
     "binhoc_macros",
 ]
 exclude = ["examples"]

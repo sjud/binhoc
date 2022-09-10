@@ -180,6 +180,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "binhoc_core"
+version = "0.1.1"
+dependencies = [
+ "async-trait",
+ "axum-core",
+ "bincode 2.0.0-rc.1",
+ "binhoc_macros",
+ "hyper",
+]
+
+[[package]]
 name = "binhoc_macros"
 version = "0.1.1"
 dependencies = [
@@ -1822,6 +1833,7 @@ dependencies = [
  "axum-macros",
  "bincode 2.0.0-rc.1",
  "binhoc",
+ "binhoc_core",
  "futures",
  "log",
  "reqwest",
