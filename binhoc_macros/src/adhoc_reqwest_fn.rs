@@ -129,8 +129,8 @@ pub fn impl_adhoc_reqwest_fn(attr:&AttributeArgs,item:&ItemFn) -> TokenStream {
                                 },
                                 _ => { panic!("Expecting something like path::BinHocN<args...>.") }
                             };
-                            header_push.push(quote!(headers.typed_insert(#var);));
-                            header_formatted.push(quote!(#var : #type_side,))
+                            header_push.push(quote!(headers.typed_insert(self.#var);));
+                            header_formatted.push(quote!(pub #var : #type_side,))
                         }
                         else {}
                     } else {
@@ -142,9 +142,10 @@ pub fn impl_adhoc_reqwest_fn(attr:&AttributeArgs,item:&ItemFn) -> TokenStream {
         }
         for (var,ty) in arg_vars.iter().zip(arg_types.iter()) {
             args_formatted.push(
-                quote!(#var : #ty,)
+                quote!(pub #var : #ty,)
             );
         }
+        let arg_vars = arg_vars.into_iter().map(|var|quote!(self.#var)).collect::<Vec<TokenStream2>>();
         (arg_vars,arg_types,args_formatted,header_push,header_formatted)
     };
 
@@ -161,6 +162,7 @@ pub fn impl_adhoc_reqwest_fn(attr:&AttributeArgs,item:&ItemFn) -> TokenStream {
 
 
     let mod_name = format_ident!("binhoc_client_{}",name);
+
     // arg_types = T
     // arg_vars = var
     // args_formatted = var : T
@@ -168,24 +170,37 @@ pub fn impl_adhoc_reqwest_fn(attr:&AttributeArgs,item:&ItemFn) -> TokenStream {
         pub mod #mod_name {
             use super::*;
             use bincode::{Decode,Encode};
-            use headers::HeaderMapExt;
-            use reqwest::header::HeaderMap;
+            use headers::{HeaderMapExt,HeaderMap};
             #[derive(Encode,Decode)]
             struct BinHoc(#(#arg_types),*);
+            pub struct Vars{
+                #(#header_formatted)*
+                #(#args_formatted)*
+            }
+            impl Vars{
+                fn into_parts(self) -> (HeaderMap,BinHoc) {
+                    (
+                        {
+                            let mut headers = HeaderMap::new();
+                            #(#header_push)*
+                            headers
+                        },
+                    BinHoc(#(#arg_vars),*)
+                        )
+                }
+            }
             pub async fn #name<#(#func_generics)*>(
                 client:&reqwest::Client,
                 base:U,
-                #(#header_formatted)*
-                #(#args_formatted)*
+                vars:Vars,
             )
             -> Result<reqwest::Response,anyhow::Error> {
-                let body = BinHoc(#(#arg_vars),*);
+                let (headers,body) = vars.into_parts();
                 let body = bincode::encode_to_vec(
                     body,
                     bincode::config::standard()
                 )?;
-                let mut headers = HeaderMap::new();
-                #(#header_push)*
+
                 Ok(client
                     #method
                     .headers(headers)

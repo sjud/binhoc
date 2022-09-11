@@ -11,7 +11,6 @@ use binhoc::{binhoc,BinHoc1, BinHoc2};
 use axum::{
     extract::State,
 };
-#[cfg(not(target_arch = "wasm32"))]
 use axum_core::response::{
     IntoResponse,
     Response

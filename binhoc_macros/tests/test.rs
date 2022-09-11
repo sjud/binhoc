@@ -38,12 +38,12 @@ async fn test_adhoc() {
     });
     let client = Client::new();
     let email = String::from("email");
-    let pass = String::from("pass");
+    let password = String::from("pass");
     let code = 32;
     let base = format!("http://{}",addr);
     assert_eq!(
         binhoc_client_adhoc::adhoc
-            (&client,base,email,pass,code).await.unwrap().status(),
+            (&client,base,binhoc_client_adhoc::Vars{email,password,code}).await.unwrap().status(),
         StatusCode::OK
     );
 }
@@ -75,13 +75,13 @@ async fn test_adhoc_sad_route() {
     });
     let client = Client::new();
     let email = String::from("email");
-    let pass = String::from("pass");
+    let password = String::from("pass");
     let code = 32;
     let base = format!("http://{}",addr);
     assert_eq!(
         binhoc_client_adhoc_sad_route
         ::adhoc_sad_route
-            (&client,base,email,pass,code).await.unwrap().status(),
+            (&client,base,binhoc_client_adhoc_sad_route::Vars{email,password,code}).await.unwrap().status(),
         StatusCode::NOT_FOUND
     );
 }
@@ -122,13 +122,13 @@ async fn test_adhoc_body_is_state() {
     });
     let client = Client::new();
     let email = String::from("email");
-    let pass = String::from("pass");
+    let password = String::from("pass");
     let code = 32;
     let base = format!("http://{}",addr);
     assert_eq!(
         binhoc_client_adhoc_body_is_state
         ::adhoc_body_is_state
-            (&client,base,email,pass,code).await.unwrap().status(),
+            (&client,base,binhoc_client_adhoc_body_is_state::Vars{email,password,code}).await.unwrap().status(),
         StatusCode::OK
     );
 }
@@ -165,7 +165,7 @@ async fn test_adhoc_optional_arg() {
     assert_eq!(
         binhoc_client_adhoc_optional_arg
         ::adhoc_optional_arg
-            (&client,base,Some(true)).await.unwrap().status(),
+            (&client,base,binhoc_client_adhoc_optional_arg::Vars{is_some:Some(true)}).await.unwrap().status(),
         StatusCode::OK
     );
 }
@@ -202,7 +202,7 @@ async fn test_adhoc_optional_arg_2() {
     assert_eq!(
         binhoc_client_adhoc_optional_arg_2
         ::adhoc_optional_arg_2
-            (&client,base,None).await.unwrap().status(),
+            (&client,base,binhoc_client_adhoc_optional_arg_2::Vars{is_none:None}).await.unwrap().status(),
         StatusCode::OK
     );
 }
@@ -246,11 +246,11 @@ async fn test_adhoc_with_struct() {
     assert_eq!(
         binhoc_client_adhoc_with_struct
         ::adhoc_with_struct
-            (&client,base,User{
+            (&client,base,binhoc_client_adhoc_with_struct::Vars{user:User{
                 email: "hello".to_string(),
                 password: "".to_string(),
                 id: 0
-            }).await.unwrap().status(),
+            }}).await.unwrap().status(),
         StatusCode::OK
     );
 }
@@ -291,7 +291,7 @@ async fn test_adhoc_with_vec_tuple() {
     assert_eq!(
         binhoc_client_adhoc_vec_tuple
         ::adhoc_vec_tuple
-            (&client,base,vec![(true,true),(true,true),(true,true)])
+            (&client,base,binhoc_client_adhoc_vec_tuple::Vars{vec:vec![(true,true),(true,true),(true,true)]})
             .await.unwrap().status(),
         StatusCode::OK
     );
@@ -355,7 +355,7 @@ async fn test_adhoc_with_headerse() {
     assert_eq!(
         binhoc_client_adhoc_with_header
         ::adhoc_with_header
-            (&client,base,XHead(String::from("x-heady")))
+            (&client,base,binhoc_client_adhoc_with_header::Vars{x_head:XHead(String::from("x-heady"))})
             .await.unwrap().status(),
         StatusCode::OK
     );
@@ -394,7 +394,7 @@ async fn test_adhoc_with_uuid() {
     assert_eq!(
         binhoc_client_adhoc_with_uuid
         ::adhoc_with_uuid
-            (&client,base,Compat(Uuid::new_v4()))
+            (&client,base,binhoc_client_adhoc_with_uuid::Vars{uuid:Compat(Uuid::new_v4())})
             .await.unwrap().status(),
         StatusCode::OK
     );
@@ -434,7 +434,11 @@ async fn test_adhoc_with_three() {
     assert_eq!(
         binhoc_client_adhoc_with_three
         ::adhoc_with_three
-            (&client,base,XHead(String::from("x-heady")),Compat(Uuid::new_v4()))
+            (&client,base,
+             binhoc_client_adhoc_with_three::Vars{
+                 header:
+             XHead(String::from("x-heady")),
+                 uuid: Compat(Uuid::new_v4())})
             .await.unwrap().status(),
         StatusCode::OK
     );
